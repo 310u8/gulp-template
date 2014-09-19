@@ -1,0 +1,92 @@
+@charset "utf-8";
+
+/* reset5 © 2011 opensource.736cs.com MIT */
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td,article,aside,audio,canvas,details,figcaption,figure,footer,header,hgroup,mark,menu,meter,nav,output,progress,section,summary,time,video{border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent;margin:0;padding:0;}body{line-height:1;}article,aside,dialog,figure,footer,header,hgroup,nav,section,blockquote{display:block;}nav ul{list-style:none;}ol{list-style:decimal;}ul{list-style:disc;}ul ul{list-style:circle;}blockquote,q{quotes:none;}blockquote:before,blockquote:after,q:before,q:after{content:none;}ins{text-decoration:underline;}del{text-decoration:line-through;}mark{background:none;}abbr[title],dfn[title]{border-bottom:1px dotted #000;cursor:help;}table{border-collapse:collapse;border-spacing:0;}hr{display:block;height:1px;border:0;border-top:1px solid #ccc;margin:1em 0;padding:0;}input[type=submit],input[type=button],button{margin:0!important;padding:0!important;}input,select,a img{vertical-align:middle;}
+
+/*-----------------------------------------------------
+add reset
+-------------------------------------------------------*/
+h1,h2,h3,h4,h5,h6,caption,address,th{
+  font-style:normal;
+  font-weight:normal;
+}
+
+ul,ol,li,dl,dt,dd{
+  list-style-type:none;
+  list-style-position:outside;
+}
+
+table,th,td{
+  vertical-align:top;
+}
+a{
+  margin:0;
+  padding:0;
+  outline:none;
+  border:0;
+  font-size:100%;
+  vertical-align:baseline;
+  background:transparent;
+}
+img{
+  border:0;
+  vertical-align:top;
+}
+br{
+  letter-spacing:0;
+}
+button,fieldset,form,input,label,legend,select,textarea{
+  margin:0;
+  padding:0;
+  vertical-align:baseline;
+  font-family:inherit;
+  font-style:inherit;
+  font-weight:inherit;
+  font-size:100%;
+  outline:none;
+}
+textarea{
+  resize:vertical;
+}
+select{
+  padding:2px;
+  background:#FFF;
+}
+input,select{
+  outline:none;
+  vertical-align:middle;
+}
+input:focus,textarea:focus,select:focus{
+  background:#d5dfff;
+}
+
+
+/*-----------------------------------------------------
+CLEARFIX
+-------------------------------------------------------*/
+
+/* clearfix (Firefox)
+------------------------------- */
+.clearfix:after{
+  content:".";
+  display:block;
+  height:0px;
+  clear:both;
+  visibility:hidden;
+}
+
+/* WinIE7
+------------------------------- */
+.clearfix{
+  display:inline-block;
+}
+
+/* WinIE6
+------------------------------- */
+/* Hides from IE-mac \*/
+* html .clearfix{
+  height:1px;
+}
+.clearfix{
+  display:block;
+}
