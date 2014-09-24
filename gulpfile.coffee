@@ -9,16 +9,23 @@ uglify = require 'gulp-uglify'
 concat = require 'gulp-concat'
 plumber = require 'gulp-plumber'
 connect = require 'gulp-connect'
+browserSync = require 'browser-sync'
 streamqueue = require 'streamqueue'
 rimraf = require 'rimraf'
 
 gulp.task 'clean', (cb) ->
   rimraf './build/', cb
 
+gulp.task 'browserSync', ->
+  browserSync.init null,
+    server:
+      baseDir: './build/'
+
 gulp.task 'slim', ->
   gulp.src './source/*.slim'
     .pipe slim()
     .pipe gulp.dest './build/'
+    .pipe browserSync.reload stream:true
 
 gulp.task 'sass', ->
   streamqueue objectMode: true,
@@ -31,6 +38,7 @@ gulp.task 'sass', ->
     .pipe concat 'style.css'
     .pipe minifyCss keepSpecialComments: 0
     .pipe gulp.dest './build/assets/stylesheets/'
+    .pipe browserSync.reload stream:true
 
 gulp.task 'coffee', ->
   gulp.src './source/assets/javascripts/**/*.coffee'
@@ -38,6 +46,7 @@ gulp.task 'coffee', ->
   .pipe coffee()
   .pipe uglify()
   .pipe gulp.dest './build/assets/javascripts/'
+  .pipe browserSync.reload stream:true
 
 gulp.task 'javascript', ->
   streamqueue objectMode: true,
@@ -46,11 +55,13 @@ gulp.task 'javascript', ->
     .pipe concat 'lib.js'
     .pipe uglify()
     .pipe gulp.dest './build/assets/javascripts/lib/'
+    .pipe browserSync.reload stream:true
 
 gulp.task 'imagemin', ->
   gulp.src './source/assets/images/**/*.{png,jpg,gif}'
     .pipe imagemin()
     .pipe gulp.dest '/build/assets/images/'
+    .pipe browserSync.reload stream:true
 
 gulp.task 'watch', ->
   gulp.watch './source/*.slim', ['slim']
@@ -62,11 +73,11 @@ gulp.task 'connect', ->
   connect.server root: 'build'
 
 gulp.task 'default', [
+  'browserSync'
   'slim'
   'sass'
   'coffee'
   'javascript'
   'imagemin'
   'watch'
-  'connect'
 ]
