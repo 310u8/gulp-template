@@ -13,7 +13,7 @@ streamqueue = require 'streamqueue'
 rimraf = require 'rimraf'
 
 gulp.task 'clean', (cb) ->
-  rimraf './build', cb
+  rimraf './build/', cb
 
 gulp.task 'slim', ->
   gulp.src './source/*.slim'
@@ -23,7 +23,7 @@ gulp.task 'slim', ->
 gulp.task 'sass', ->
   streamqueue objectMode: true,
       gulp.src './source/assets/stylesheets/lib/*.css'
-      gulp.src './source/assets/stylesheets/*.sass', !'./source/assets/stylesheets/**/mixin.sass'
+      gulp.src './source/assets/stylesheets/**/*.sass', !'./source/assets/stylesheets/**/mixin.sass'
         .pipe plumber()
         .pipe rubySass
           noCache: true
@@ -33,7 +33,7 @@ gulp.task 'sass', ->
     .pipe gulp.dest './build/assets/stylesheets/'
 
 gulp.task 'coffee', ->
-  gulp.src './source/assets/javascripts/*.coffee'
+  gulp.src './source/assets/javascripts/**/*.coffee'
   .pipe plumber()
   .pipe coffee()
   .pipe uglify()
@@ -54,8 +54,8 @@ gulp.task 'imagemin', ->
 
 gulp.task 'watch', ->
   gulp.watch './source/*.slim', ['slim']
-  gulp.watch './source/assets/stylesheets/*/*.sass', ['sass']
-  gulp.watch './source/assets/javascripts/*.coffee', ['coffee']
+  gulp.watch './source/assets/stylesheets/**/*.sass', ['sass']
+  gulp.watch './source/assets/javascripts/**/*.coffee', ['coffee']
   gulp.watch './source/assets/images/**/*.{png,jpg,gif}', ['imagemin']
 
 gulp.task 'connect', ->
