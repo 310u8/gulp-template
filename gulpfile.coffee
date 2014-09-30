@@ -1,83 +1,82 @@
 gulp = require 'gulp'
 slim = require 'gulp-slim'
 rubySass = require 'gulp-ruby-sass'
-coffee = require 'gulp-coffee'
-minifyCss = require 'gulp-minify-css'
 autoprefixer = require 'gulp-autoprefixer'
-imagemin = require 'gulp-imagemin'
+minifyCss = require 'gulp-minify-css'
+coffee = require 'gulp-coffee'
 uglify = require 'gulp-uglify'
 concat = require 'gulp-concat'
 plumber = require 'gulp-plumber'
-connect = require 'gulp-connect'
-browserSync = require 'browser-sync'
+imagemin = require 'gulp-imagemin'
+watch = require 'gulp-watch'
+runSequence = require 'gulp-run-sequence'
 streamqueue = require 'streamqueue'
+browserSync = require 'browser-sync'
 rimraf = require 'rimraf'
 
 gulp.task 'clean', (cb) ->
-  rimraf './build/', cb
-
-gulp.task 'browserSync', ->
-  browserSync.init null,
-    server:
-      baseDir: './build/'
+  rimraf 'build/', cb
 
 gulp.task 'slim', ->
-  gulp.src './source/*.slim'
+  gulp.src 'source/*.slim'
     .pipe slim()
-    .pipe gulp.dest './build/'
+    .pipe gulp.dest 'build/'
     .pipe browserSync.reload stream:true
 
 gulp.task 'sass', ->
   streamqueue objectMode: true,
-      gulp.src './source/assets/stylesheets/lib/*.css'
-      gulp.src './source/assets/stylesheets/**/*.sass', !'./source/assets/stylesheets/**/mixin.sass'
+      gulp.src 'source/assets/stylesheets/lib/*.css'
+      gulp.src 'source/assets/stylesheets/**/*.sass'
         .pipe plumber()
         .pipe rubySass
           noCache: true
         .pipe autoprefixer 'last 2 version', 'ie 8', 'ie 9'
     .pipe concat 'style.css'
     .pipe minifyCss keepSpecialComments: 0
-    .pipe gulp.dest './build/assets/stylesheets/'
+    .pipe gulp.dest 'build/assets/stylesheets/'
     .pipe browserSync.reload stream:true
 
 gulp.task 'coffee', ->
-  gulp.src './source/assets/javascripts/**/*.coffee'
-  .pipe plumber()
-  .pipe coffee()
-  .pipe uglify()
-  .pipe gulp.dest './build/assets/javascripts/'
-  .pipe browserSync.reload stream:true
+  gulp.src 'source/assets/javascripts/**/*.coffee'
+    .pipe plumber()
+    .pipe coffee()
+    .pipe uglify()
+    .pipe gulp.dest 'build/assets/javascripts/'
+    .pipe browserSync.reload stream:true
 
 gulp.task 'javascript', ->
   streamqueue objectMode: true,
-      gulp.src './source/assets/javascripts/lib/jquery-1.11.1.min.js'
-      gulp.src './source/assets/javascripts/lib/*.js'
+      gulp.src 'source/assets/javascripts/lib/jquery.min.js'
+      gulp.src 'source/assets/javascripts/lib/*.js'
     .pipe concat 'lib.js'
     .pipe uglify()
-    .pipe gulp.dest './build/assets/javascripts/lib/'
+    .pipe gulp.dest 'build/assets/javascripts/lib/'
     .pipe browserSync.reload stream:true
 
 gulp.task 'imagemin', ->
-  gulp.src './source/assets/images/**/*.{png,jpg,gif}'
-    .pipe imagemin()
-    .pipe gulp.dest '/build/assets/images/'
+  gulp.src 'source/assets/images/**/*'
+    .pipe imagemin
+      svgoPlugins: [removeViewBox: false]
+    .pipe gulp.dest 'build/assets/images/'
     .pipe browserSync.reload stream:true
 
 gulp.task 'watch', ->
-  gulp.watch './source/*.slim', ['slim']
-  gulp.watch './source/assets/stylesheets/**/*.sass', ['sass']
-  gulp.watch './source/assets/javascripts/**/*.coffee', ['coffee']
-  gulp.watch './source/assets/images/**/*.{png,jpg,gif}', ['imagemin']
+  watch 'source/*.slim', ->
+    gulp.start 'slim'
+  watch 'source/assets/stylesheets/**/*.sass', ->
+    gulp.start 'sass'
+  watch 'source/assets/javascripts/**/*.coffee', ->
+    gulp.start 'coffee'
+  watch 'source/assets/javascripts/lib/*.js', ->
+    gulp.start 'javascript'
+  watch 'source/assets/images/**/*', ->
+    gulp.start 'imagemin'
 
-gulp.task 'connect', ->
-  connect.server root: 'build'
+gulp.task 'browserSync', ->
+  browserSync.init null,
+    server:
+      baseDir: 'build/'
+    notify: false
 
-gulp.task 'default', [
-  'browserSync'
-  'slim'
-  'sass'
-  'coffee'
-  'javascript'
-  'imagemin'
-  'watch'
-]
+gulp.task 'default', ->
+  runSequence 'clean', ['slim', 'sass', 'coffee', 'javascript', 'imagemin'], 'browserSync', 'watch'
