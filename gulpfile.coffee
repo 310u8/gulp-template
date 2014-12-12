@@ -1,6 +1,6 @@
 gulp = require 'gulp'
 slim = require 'gulp-slim'
-rubySass = require 'gulp-ruby-sass'
+sass = require 'gulp-sass'
 autoprefixer = require 'gulp-autoprefixer'
 minifyCss = require 'gulp-minify-css'
 coffee = require 'gulp-coffee'
@@ -28,8 +28,7 @@ gulp.task 'sass', ->
       gulp.src 'source/assets/stylesheets/lib/*.css'
       gulp.src 'source/assets/stylesheets/**/*.sass'
         .pipe plumber()
-        .pipe rubySass
-          noCache: true
+        .pipe sass sourceComments: 'normal'
         .pipe autoprefixer 'last 2 version', 'ie 8', 'ie 9'
     .pipe concat 'style.css'
     .pipe minifyCss keepSpecialComments: 0
