@@ -59,6 +59,10 @@ gulp.task 'imagemin', ->
     .pipe gulp.dest 'build/assets/images/'
     .pipe browserSync.reload stream:true
 
+gulp.task 'copy', ->
+  gulp.src 'source/.htaccess'
+    .pipe gulp.dest 'build/'
+
 gulp.task 'watch', ->
   watch 'source/*.slim', ->
     gulp.start 'slim'
@@ -78,4 +82,4 @@ gulp.task 'browserSync', ->
     notify: false
 
 gulp.task 'default', ->
-  runSequence 'clean', ['slim', 'sass', 'coffee', 'javascript', 'imagemin'], 'browserSync', 'watch'
+  runSequence 'clean', ['slim', 'sass', 'coffee', 'javascript', 'imagemin', 'copy'], 'browserSync', 'watch'
