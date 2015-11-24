@@ -1,0 +1,23 @@
+@charset "utf-8"
+
+=mediaquery($device)
+  @if $device == pc
+    @media only screen and (min-width: $breakpoint+1)
+      @content
+  @else if $device == sp
+    @media only screen and (max-width: $breakpoint)
+      @content
+
+=clearfix
+  zoom: 1
+
+  &:after
+    clear: both
+    display: block
+    content: ""
+
+=setFont($font-size: $font-size, $line-height: $line-height, $margin-bottom: 0, $margin-top: 0)
+  font-size: $font-size
+  line-height: $line-height
+  margin-bottom: $margin-bottom - ($font-size * $line-height - $font-size) / 2 
+  margin-top: $margin-top - ($font-size * $line-height - $font-size) / 2
