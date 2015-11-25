@@ -1,0 +1,28 @@
+-siteName = "My Website"
+
+if title == ""
+  -title = siteName
+else
+  -title = title + " - " + siteName
+
+meta(charset="utf-8")
+meta(http-equiv="Content-Language", content="ja")
+
+title #{title}
+meta(name="keywords", content="")
+meta(name="description", content="#{description}")
+
+meta(property="og:title", content="#{title}")
+meta(property="og:type", content="website")
+meta(property="og:url", content="http://www.example.com#{url}")
+meta(property="og:description", content="#{description}")
+meta(property="og:site_name", content="#{siteName}")
+meta(property="og:image", content="http://www.example.com/asses/images/og_image.png")
+meta(property="og:locale", content="ja_JP")
+meta(property="fb:app_id", content="")
+
+meta(name="viewport", content="width=device-width")
+
+link(rel="shortcut icon", href="/assets/images/favicon.ico")
+link(rel="stylesheet", href="/assets/stylesheets/style.css")
+script(src="/assets/javascripts/script.js")

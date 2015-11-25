@@ -2,7 +2,7 @@
 # modules
 #------------------------------------------
 gulp = require 'gulp'
-slim = require 'gulp-slim'
+jade = require 'gulp-jade'
 sass = require 'gulp-sass'
 autoprefixer = require 'gulp-autoprefixer'
 minifyCss = require 'gulp-minify-css'
@@ -41,10 +41,12 @@ path =
 gulp.task 'clean', (cb) ->
   rimraf 'build/', cb
 
-#html(slim)
-gulp.task 'slim', ->
-  gulp.src path.source.root + '*.slim'
-    .pipe slim()
+#html(jade)
+gulp.task 'jade', ->
+  gulp.src path.source.root + '**/*.jade'
+    .pipe plumber()
+    .pipe jade
+      basedir: path.source.root
     .pipe gulp.dest path.build.root
     .pipe browserSync.stream()
 
@@ -86,8 +88,8 @@ gulp.task 'copy', ->
 
 #watch
 gulp.task 'watch', ->
-  watch path.source.root + '*.slim', ->
-    gulp.start 'slim'
+  watch path.source.root + '**/*.jade', ->
+    gulp.start 'jade'
   watch path.source.stylesheets + '**/*.sass', ->
     gulp.start 'sass'
   watch  path.source.images + '**/*', ->
@@ -102,4 +104,4 @@ gulp.task 'browserSync', ->
 
 #default
 gulp.task 'default', ->
-  runSequence 'clean', ['slim', 'sass', 'watchify', 'imagemin', 'copy'], 'browserSync', 'watch'
+  runSequence 'clean', ['jade', 'sass', 'watchify', 'imagemin', 'copy'], 'browserSync', 'watch'
