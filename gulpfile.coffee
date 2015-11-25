@@ -4,18 +4,19 @@
 gulp = require 'gulp'
 jade = require 'gulp-jade'
 sass = require 'gulp-sass'
+imagemin = require 'gulp-imagemin'
+sourcemaps = require 'gulp-sourcemaps'
+plumber = require 'gulp-plumber'
 autoprefixer = require 'gulp-autoprefixer'
+concat = require 'gulp-concat'
 minifyCss = require 'gulp-minify-css'
 uglify = require 'gulp-uglify'
-concat = require 'gulp-concat'
-plumber = require 'gulp-plumber'
-imagemin = require 'gulp-imagemin'
-watch = require 'gulp-watch'
-runSequence = require 'run-sequence'
-browserSync = require 'browser-sync'
-browserify = require 'browserify'
 watchify = require 'gulp-watchify'
+buffer = require 'vinyl-buffer'
 rename = require 'gulp-rename'
+watch = require 'gulp-watch'
+browserSync = require 'browser-sync'
+runSequence = require 'run-sequence'
 rimraf = require 'rimraf'
 
 #------------------------------------------
@@ -53,10 +54,12 @@ gulp.task 'jade', ->
 #css(sass)
 gulp.task 'sass', ->
   gulp.src path.source.stylesheets + '**/*.sass'
+    .pipe sourcemaps.init()
     .pipe sass().on 'error', sass.logError
     .pipe autoprefixer 'last 2 version', 'ie 8', 'ie 9'
     .pipe concat 'style.css'
     .pipe minifyCss keepSpecialComments: 0
+    .pipe sourcemaps.write './'
     .pipe gulp.dest path.build.stylesheets
     .pipe browserSync.stream()
 
@@ -66,10 +69,16 @@ gulp.task 'watchify', watchify (watchify) ->
     .pipe plumber()
     .pipe watchify
       watch: on
+      debug: true
       extenstions: ['.coffee', '.js']
       transform : ['coffeeify']
+    .pipe buffer()
+    .pipe sourcemaps.init
+      loadMaps: true
     .pipe rename
       extname: '.js'
+    .pipe uglify()
+    .pipe sourcemaps.write './'
     .pipe gulp.dest path.build.javascripts
     .pipe browserSync.stream()
 
