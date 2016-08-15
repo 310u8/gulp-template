@@ -14,6 +14,9 @@ uglify = require 'gulp-uglify'
 watchify = require 'gulp-watchify'
 buffer = require 'vinyl-buffer'
 rename = require 'gulp-rename'
+svgmin = require 'gulp-svgmin'
+iconfontCss = require 'gulp-iconfont-css'
+iconfont = require 'gulp-iconfont'
 watch = require 'gulp-watch'
 browserSync = require 'browser-sync'
 runSequence = require 'run-sequence'
@@ -28,12 +31,15 @@ path =
     stylesheets: 'source/assets/stylesheets/'
     javascripts: 'source/assets/javascripts/'
     images: 'source/assets/images/'
+    fonts: 'source/assets/fonts/'
+    icons: 'source/assets/icons/'
 
   build:
     root: 'build/'
     stylesheets: 'build/assets/stylesheets/'
     javascripts: 'build/assets/javascripts/'
     images: 'build/assets/images/'
+    fonts: 'build/assets/fonts/'
 
 #------------------------------------------
 # task
@@ -90,6 +96,27 @@ gulp.task 'imagemin', ->
     .pipe gulp.dest path.build.images
     .pipe browserSync.stream()
 
+#iconfont
+gulp.task 'iconfont', ->
+  svgminData = gulp.src path.source.icons + '*.svg'
+    .pipe svgmin()
+
+  svgminData
+    .pipe plumber()
+    .pipe iconfontCss
+      fontName: 'iconfont'
+      path: path.source.icons + '_icons.scss'
+      targetPath: '../stylesheets/_icons.scss'
+      fontPath: '../fonts/'
+    .pipe iconfont
+      fontName: 'iconfont'
+      formats: ['ttf', 'eot', 'woff', 'svg']
+      appendCodepoints: false
+    .pipe gulp.dest path.source.fonts
+    .on 'end', ->
+      gulp.src path.source.fonts + '**/*'
+        .pipe gulp.dest path.build.fonts
+
 #copy
 gulp.task 'copy', ->
   gulp.src path.source.root + '.htaccess'
@@ -103,6 +130,8 @@ gulp.task 'watch', ->
     gulp.start 'sass'
   watch  path.source.images + '**/*', ->
     gulp.start 'imagemin'
+  watch path.source.icons + '**/*', ->
+    gulp.start 'iconfont'
 
 #browserSync
 gulp.task 'browserSync', ->
@@ -113,4 +142,4 @@ gulp.task 'browserSync', ->
 
 #default
 gulp.task 'default', ->
-  runSequence 'clean', ['jade', 'sass', 'watchify', 'imagemin', 'copy'], 'browserSync', 'watch'
+  runSequence 'clean', 'iconfont', ['jade', 'sass', 'watchify', 'imagemin', 'copy'], 'browserSync', 'watch'
