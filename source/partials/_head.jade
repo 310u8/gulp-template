@@ -1,4 +1,5 @@
 -siteName = "My Website"
+-domain = "www.example.com"
 
 if title == ""
   -title = siteName
@@ -7,6 +8,7 @@ else
 
 meta(charset="utf-8")
 meta(http-equiv="Content-Language", content="ja")
+base(href="/")
 
 title #{title}
 meta(name="keywords", content="")
@@ -14,13 +16,19 @@ meta(name="description", content="#{description}")
 
 meta(property="og:title", content="#{title}")
 meta(property="og:type", content="website")
-meta(property="og:url", content="http://www.example.com#{url}")
+meta(property="og:url", content="http://#{domain}#{url}")
 meta(property="og:description", content="#{description}")
 meta(property="og:site_name", content="#{siteName}")
-meta(property="og:image", content="http://www.example.com/asses/images/og_image.png")
+meta(property="og:image", content="http://#{domain}/assets/images/og_image.png")
 meta(property="og:locale", content="ja_JP")
 meta(property="fb:app_id", content="")
-
+meta(name='twitter:card', content='summary')
+meta(name='twitter:site', content='@')
+meta(name='twitter:title', content='#{title}')
+meta(name='twitter:description', content='#{description}')
+meta(name='twitter:image', content='http://#{domain}/assets/images/og_image.png')
+meta(name='twitter:url', content='http://#{domain}#{url}')
+  
 meta(name="viewport", content="width=device-width")
 
 link(rel="shortcut icon", href="/assets/images/favicon.ico")
