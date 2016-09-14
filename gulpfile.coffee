@@ -50,7 +50,7 @@ gulp.task 'clean', (cb) ->
 
 #html(jade)
 gulp.task 'jade', ->
-  gulp.src path.source.root + '**/*.jade'
+  gulp.src [path.source.root + '**/*.jade', '!' + path.source.root + '**/_*.jade']
     .pipe plumber()
     .pipe jade
       basedir: path.source.root
