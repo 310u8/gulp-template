@@ -5,6 +5,9 @@ gulp = require 'gulp'
 jade = require 'gulp-jade'
 sass = require 'gulp-sass'
 imagemin = require 'gulp-imagemin'
+jpegtran = require 'imagemin-jpegtran'
+pngquant  = require 'imagemin-pngquant'
+svgmin = require 'gulp-svgmin'
 sourcemaps = require 'gulp-sourcemaps'
 plumber = require 'gulp-plumber'
 autoprefixer = require 'gulp-autoprefixer'
@@ -14,10 +17,10 @@ uglify = require 'gulp-uglify'
 watchify = require 'gulp-watchify'
 buffer = require 'vinyl-buffer'
 rename = require 'gulp-rename'
-svgmin = require 'gulp-svgmin'
 iconfontCss = require 'gulp-iconfont-css'
 iconfont = require 'gulp-iconfont'
 watch = require 'gulp-watch'
+cached = require 'gulp-cached'
 browserSync = require 'browser-sync'
 runSequence = require 'run-sequence'
 rimraf = require 'rimraf'
@@ -91,8 +94,16 @@ gulp.task 'watchify', watchify (watchify) ->
 #image
 gulp.task 'imagemin', ->
   gulp.src path.source.images + '**/*'
-    .pipe imagemin
-      svgoPlugins: [removeViewBox: false]
+    .pipe cached 'imagemin'
+    .pipe imagemin([
+      jpegtran
+        quality: 80
+      pngquant
+        quality: 80
+        speed: 1
+      imagemin.svgo
+        plugins: [removeViewBox: false]
+      ])
     .pipe gulp.dest path.build.images
     .pipe browserSync.stream()
 
