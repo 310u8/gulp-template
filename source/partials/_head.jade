@@ -28,9 +28,16 @@ meta(name='twitter:title', content='#{title}')
 meta(name='twitter:description', content='#{description}')
 meta(name='twitter:image', content='http://#{domain}/assets/images/og_image.png')
 meta(name='twitter:url', content='http://#{domain}#{url}')
-  
-meta(name="viewport", content="width=device-width")
-
 link(rel="shortcut icon", href="/assets/images/favicon.ico")
-link(rel="stylesheet", href="/assets/stylesheets/style.css")
-script(src="/assets/javascripts/app.js")
+script.
+  (function(){
+    var _UA = navigator.userAgent;
+    if (_UA.indexOf('iPhone') > -1 || _UA.indexOf('iPod') > -1 || _UA.indexOf('Android') > -1) {
+      document.write('<link href="./assets/stylesheets/sp/style.css" rel="stylesheet" type="text/css">');
+      document.write('<meta name="viewport" content="width=device-width">');
+    }else{
+      document.write('<link href="./assets/stylesheets/pc/style.css" rel="stylesheet" type="text/css">');
+      document.write('<meta name="viewport" content="width=1024px">');
+    }
+  })();
+script(src="/assets/javascripts/app.js" async)

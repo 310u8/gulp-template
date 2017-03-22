@@ -61,14 +61,24 @@ gulp.task 'jade', ->
 
 #css(sass)
 gulp.task 'sass', ->
-  gulp.src path.source.stylesheets + '**/*.sass'
+  gulp.src path.source.stylesheets + 'pc/*.sass'
     .pipe sourcemaps.init()
     .pipe sass().on 'error', sass.logError
-    .pipe autoprefixer 'last 2 version', 'ie 8', 'ie 9'
+    .pipe autoprefixer()
     .pipe concat 'style.css'
     .pipe minifyCss keepSpecialComments: 0
     .pipe sourcemaps.write './'
-    .pipe gulp.dest path.build.stylesheets
+    .pipe gulp.dest path.build.stylesheets + 'pc/'
+    .pipe browserSync.stream()
+
+  gulp.src path.source.stylesheets + 'sp/*.sass'
+    .pipe sourcemaps.init()
+    .pipe sass().on 'error', sass.logError
+    .pipe autoprefixer()
+    .pipe concat 'style.css'
+    .pipe minifyCss keepSpecialComments: 0
+    .pipe sourcemaps.write './'
+    .pipe gulp.dest path.build.stylesheets + 'sp/'
     .pipe browserSync.stream()
 
 #javascript(webpack)
