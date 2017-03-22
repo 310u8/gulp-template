@@ -167,4 +167,4 @@ gulp.task 'browserSync', ->
 
 #default
 gulp.task 'default', ->
-  runSequence 'clean', 'iconfont', ['pug', 'sass', 'webpack', 'copy'], 'browserSync', 'watch'
+  runSequence 'clean', 'iconfont', ['pug', 'sass', 'webpack', 'imagemin', 'copy'], 'browserSync', 'watch'
