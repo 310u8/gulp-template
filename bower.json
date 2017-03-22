@@ -1,0 +1,19 @@
+{
+  "name": "gulp-template",
+  "description": "",
+  "main": "gulpfile.js",
+  "license": "ISC",
+  "homepage": "https://github.com/310u8/gulp-template",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "^3.2.1",
+    "velocity": "^1.5.0",
+    "PreloadJS": "^0.6.2"
+  }
+}

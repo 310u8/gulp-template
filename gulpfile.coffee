@@ -4,6 +4,9 @@
 gulp = require 'gulp'
 jade = require 'gulp-jade'
 sass = require 'gulp-sass'
+webpack = require 'webpack'
+gulpWebpack = require 'gulp-webpack'
+BowerWebpackPlugin = require 'bower-webpack-plugin'
 imagemin = require 'gulp-imagemin'
 jpegtran = require 'imagemin-jpegtran'
 pngquant  = require 'imagemin-pngquant'
@@ -13,10 +16,6 @@ plumber = require 'gulp-plumber'
 autoprefixer = require 'gulp-autoprefixer'
 concat = require 'gulp-concat'
 minifyCss = require 'gulp-minify-css'
-uglify = require 'gulp-uglify'
-watchify = require 'gulp-watchify'
-buffer = require 'vinyl-buffer'
-rename = require 'gulp-rename'
 iconfontCss = require 'gulp-iconfont-css'
 iconfont = require 'gulp-iconfont'
 watch = require 'gulp-watch'
@@ -72,22 +71,25 @@ gulp.task 'sass', ->
     .pipe gulp.dest path.build.stylesheets
     .pipe browserSync.stream()
 
-#javascript(watchify)
-gulp.task 'watchify', watchify (watchify) ->
-  gulp.src path.source.javascripts + 'script.coffee'
-    .pipe plumber()
-    .pipe watchify
-      watch: on
-      debug: true
-      extenstions: ['.coffee', '.js']
-      transform : ['coffeeify']
-    .pipe buffer()
-    .pipe sourcemaps.init
-      loadMaps: true
-    .pipe rename
-      extname: '.js'
-    .pipe uglify()
-    .pipe sourcemaps.write './'
+#javascript(webpack)
+gulp.task 'webpack', =>
+  gulp.src path.source.javascripts + 'app.coffee'
+    .pipe gulpWebpack
+      output:
+        filename: 'app.js'
+      devtool: 'source-map'
+      resolve:
+        extensions: ['', '.js', '.coffee']
+        modulesDirectories: ['node_modules', 'bower_components']
+      module:                                                     
+        loaders:[
+          {test: /\.coffee$/, loader: 'coffee-loader'}
+          {test: /bower_components(\/|\\)(PreloadJS|SoundJS|EaselJS|TweenJS)(\/|\\).*\.js$/, loader: 'imports?this=>window!exports?window.createjs'}
+        ]
+      plugins:[
+        new webpack.optimize.UglifyJsPlugin()
+        new BowerWebpackPlugin()
+      ]
     .pipe gulp.dest path.build.javascripts
     .pipe browserSync.stream()
 
@@ -139,7 +141,9 @@ gulp.task 'watch', ->
     gulp.start 'jade'
   watch path.source.stylesheets + '**/*.sass', ->
     gulp.start 'sass'
-  watch  path.source.images + '**/*', ->
+  watch path.source.javascripts + '**/*', ->
+    gulp.start 'webpack'
+  watch path.source.images + '**/*', ->
     gulp.start 'imagemin'
   watch path.source.icons + '**/*', ->
     gulp.start 'iconfont'
@@ -153,4 +157,4 @@ gulp.task 'browserSync', ->
 
 #default
 gulp.task 'default', ->
-  runSequence 'clean', 'iconfont', ['jade', 'sass', 'watchify', 'imagemin', 'copy'], 'browserSync', 'watch'
+  runSequence 'clean', 'iconfont', ['jade', 'sass', 'webpack', 'copy'], 'browserSync', 'watch'
