@@ -2,7 +2,7 @@
 # modules
 #------------------------------------------
 gulp = require 'gulp'
-jade = require 'gulp-jade'
+pug = require 'gulp-pug'
 sass = require 'gulp-sass'
 webpack = require 'webpack'
 gulpWebpack = require 'gulp-webpack'
@@ -50,11 +50,11 @@ path =
 gulp.task 'clean', (cb) ->
   rimraf 'build/', cb
 
-#html(jade)
-gulp.task 'jade', ->
-  gulp.src [path.source.root + '**/*.jade', '!' + path.source.root + '**/_*.jade']
+#html(pug)
+gulp.task 'pug', ->
+  gulp.src [path.source.root + '**/*.pug', '!' + path.source.root + '**/_*.pug']
     .pipe plumber()
-    .pipe jade
+    .pipe pug
       basedir: path.source.root
     .pipe gulp.dest path.build.root
     .pipe browserSync.stream()
@@ -147,8 +147,8 @@ gulp.task 'copy', ->
 
 #watch
 gulp.task 'watch', ->
-  watch path.source.root + '**/*.jade', ->
-    gulp.start 'jade'
+  watch path.source.root + '**/*.pug', ->
+    gulp.start 'pug'
   watch path.source.stylesheets + '**/*.sass', ->
     gulp.start 'sass'
   watch path.source.javascripts + '**/*', ->
@@ -167,4 +167,4 @@ gulp.task 'browserSync', ->
 
 #default
 gulp.task 'default', ->
-  runSequence 'clean', 'iconfont', ['jade', 'sass', 'webpack', 'copy'], 'browserSync', 'watch'
+  runSequence 'clean', 'iconfont', ['pug', 'sass', 'webpack', 'copy'], 'browserSync', 'watch'
