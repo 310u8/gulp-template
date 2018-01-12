@@ -5,8 +5,7 @@ gulp = require 'gulp'
 pug = require 'gulp-pug'
 sass = require 'gulp-sass'
 webpack = require 'webpack'
-gulpWebpack = require 'gulp-webpack'
-BowerWebpackPlugin = require 'bower-webpack-plugin'
+webpackStream = require 'webpack-stream'
 imagemin = require 'gulp-imagemin'
 jpegtran = require 'imagemin-jpegtran'
 pngquant  = require 'imagemin-pngquant'
@@ -29,26 +28,26 @@ rimraf = require 'rimraf'
 #------------------------------------------
 path =
   source:
-    root: 'source/'
-    stylesheets: 'source/assets/stylesheets/'
-    javascripts: 'source/assets/javascripts/'
-    images: 'source/assets/images/'
-    fonts: 'source/assets/fonts/'
-    icons: 'source/assets/icons/'
+    root: './source/'
+    stylesheets: './source/assets/stylesheets/'
+    javascripts: './source/assets/javascripts/'
+    images: './source/assets/images/'
+    fonts: './source/assets/fonts/'
+    icons: './source/assets/icons/'
 
   build:
-    root: 'build/'
-    stylesheets: 'build/assets/stylesheets/'
-    javascripts: 'build/assets/javascripts/'
-    images: 'build/assets/images/'
-    fonts: 'build/assets/fonts/'
+    root: './build/'
+    stylesheets: './build/assets/stylesheets/'
+    javascripts: './build/assets/javascripts/'
+    images: './build/assets/images/'
+    fonts: './build/assets/fonts/'
 
 #------------------------------------------
 # task
 #------------------------------------------
 #clean
 gulp.task 'clean', (cb) ->
-  rimraf 'build/', cb
+  rimraf path.build.root, cb
 
 #html(pug)
 gulp.task 'pug', ->
@@ -83,23 +82,25 @@ gulp.task 'sass', ->
 
 #javascript(webpack)
 gulp.task 'webpack', =>
-  gulp.src path.source.javascripts + 'app.coffee'
-    .pipe gulpWebpack
-      output:
-        filename: 'app.js'
-      devtool: 'source-map'
-      resolve:
-        extensions: ['', '.js', '.coffee']
-        modulesDirectories: ['node_modules', 'bower_components']
-      module:                                                     
-        loaders:[
-          {test: /\.coffee$/, loader: 'coffee-loader'}
-          {test: /bower_components(\/|\\)(PreloadJS|SoundJS|EaselJS|TweenJS)(\/|\\).*\.js$/, loader: 'imports?this=>window!exports?window.createjs'}
-        ]
-      plugins:[
-        new webpack.optimize.UglifyJsPlugin()
-        new BowerWebpackPlugin()
+  return webpackStream
+    entry: path.source.javascripts + 'app.coffee'
+    output:
+      filename: "app.js"
+    module:
+      rules: [
+        test: /\.coffee$/
+        use: ['coffee-loader']
       ]
+    plugins: [
+      new webpack.optimize.UglifyJsPlugin
+        sourceMap: true
+    ]
+    devtool: 'eval'
+    stats:
+      errorDetails: true
+  ,webpack
+    .on 'error', ->
+      @emit 'end'
     .pipe gulp.dest path.build.javascripts
     .pipe browserSync.stream()
 
@@ -130,10 +131,12 @@ gulp.task 'iconfont', ->
       fontName: 'iconfont'
       path: path.source.icons + '_icons.scss'
       targetPath: '../stylesheets/_icons.scss'
-      fontPath: '../fonts/'
+      fontPath: '../../fonts/'
     .pipe iconfont
       fontName: 'iconfont'
-      formats: ['ttf', 'eot', 'woff', 'svg']
+      prependUnicode: true
+      formats: ['ttf', 'eot', 'woff', 'woff2', 'svg']
+      timestamp: Math.round　Date.now()/1000
       appendCodepoints: false
     .pipe gulp.dest path.source.fonts
     .on 'end', ->
@@ -164,6 +167,7 @@ gulp.task 'browserSync', ->
   server:
     baseDir: path.build.root
   notify: false
+  ghostMode: false
 
 #default
 gulp.task 'default', ->
