@@ -11,14 +11,6 @@
 
     $ npm install
 
-### 4. Bowerをインストール
-
-    $ npm install --g bower
-
-### 5. コンポーネントをインストール
-
-    $ bower install
-
 ### 4. 実行
 
     $ gulp
