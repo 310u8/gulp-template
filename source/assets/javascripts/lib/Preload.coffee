@@ -17,7 +17,8 @@ module.exports = class Preload
       if $(@).is 'img'
         imgs.push $(@).attr 'src' if $(@).attr('src')?
       else if $(@).css('background-image') != 'none'
-        imgs.push $(@).css('background-image').replace /(url\(|\)|")/g, ''
+        unless $(@).css('background-image').match(/linear-gradient/)
+          imgs.push $(@).css('background-image').replace /(url\(|\)|")/g, ''
 
     return imgs
 

@@ -2,11 +2,11 @@
 #   .then =>
 #     console.log '1000'
 #     return $.timeout 1000
-#   .then =>
+#   .done =>
 #     console.log '2000'
 #
 # $.interval 1000
-#   .when =>
+#   .progress =>
 #     console.log '1000'
 
 module.exports = class Deferred

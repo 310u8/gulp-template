@@ -1,5 +1,5 @@
-window.$ = require 'jquery'
-velocity = require 'velocity-animate'
+window.$ = window.jQuery = require 'jquery'
+window.velocity = require 'velocity-animate'
 
 UserAgent = require './lib/UserAgent.coffee'
 Deferred = require './lib/Deferred.coffee'
