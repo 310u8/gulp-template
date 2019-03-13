@@ -6,7 +6,6 @@ pug = require 'gulp-pug'
 sass = require 'gulp-sass'
 webpack = require 'webpack'
 webpackStream = require 'webpack-stream'
-imagemin = require 'gulp-imagemin'
 jpegtran = require 'imagemin-jpegtran'
 pngquant  = require 'imagemin-pngquant'
 svgmin = require 'gulp-svgmin'
@@ -105,18 +104,8 @@ gulp.task 'webpack', =>
     .pipe browserSync.stream()
 
 #image
-gulp.task 'imagemin', ->
+gulp.task 'image', ->
   gulp.src path.source.images + '**/*'
-    .pipe cached 'imagemin'
-    .pipe imagemin([
-      jpegtran
-        quality: 80
-      pngquant
-        quality: 80
-        speed: 1
-      imagemin.svgo
-        plugins: [removeViewBox: false]
-      ])
     .pipe gulp.dest path.build.images
     .pipe browserSync.stream()
 
@@ -157,7 +146,7 @@ gulp.task 'watch', ->
   watch path.source.javascripts + '**/*', ->
     gulp.start 'webpack'
   watch path.source.images + '**/*', ->
-    gulp.start 'imagemin'
+    gulp.start 'image'
   watch path.source.icons + '**/*', ->
     gulp.start 'iconfont'
 
@@ -171,4 +160,4 @@ gulp.task 'browserSync', ->
 
 #default
 gulp.task 'default', ->
-  runSequence 'clean', 'iconfont', ['pug', 'sass', 'webpack', 'imagemin', 'copy'], 'browserSync', 'watch'
+  runSequence 'clean', 'iconfont', ['pug', 'sass', 'webpack', 'image', 'copy'], 'browserSync', 'watch'

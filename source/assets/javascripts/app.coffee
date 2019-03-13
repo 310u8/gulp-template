@@ -3,10 +3,14 @@ window.velocity = require 'velocity-animate'
 
 UserAgent = require './lib/UserAgent.coffee'
 Deferred = require './lib/Deferred.coffee'
-ReplaceImg = require './lib/ReplaceImg.coffee'
 Preload = require './lib/Preload.coffee'
+ResizeManager = require './lib/ResizeManager.coffee'
+ScrollManager = require './lib/ScrollManager.coffee'
 
 window._ua = new UserAgent
 window.deferred = new Deferred
+window.preload = new Preload
+window.resizeManager = new ResizeManager
+window.scrollManager = new ScrollManager
 
 $ ->

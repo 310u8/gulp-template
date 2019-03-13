@@ -1,10 +1,12 @@
-# preload = new Preload
+# imgs = preload.search $('body *')
 #
-# imgs = preload.search $('img')
+# preload.divide imgs
 #
-# p = preload.load imgs
-# p.done =>
-#   console.log 'done'
+# preload.load imgs,
+#   'loaded': (img) =>
+#     preload.set img
+#   'complete':=>
+#     console.log 'complete'
 
 module.exports = class Preload
 
@@ -14,41 +16,57 @@ module.exports = class Preload
     imgs = []
 
     $img.each ->
-      if $(@).is 'img'
-        imgs.push $(@).attr 'src' if $(@).attr('src')?
-      else if $(@).css('background-image') != 'none'
-        unless $(@).css('background-image').match(/linear-gradient/)
-          imgs.push $(@).css('background-image').replace /(url\(|\)|")/g, ''
+      isImg = $(@).is('img')
+      isBg = $(@).css('background-image') != 'none' && !$(@).css('background-image').match(/linear-gradient/)
+
+      if isImg || isBg
+        img = []
+        img['$'] = $(@)
+
+        if isImg
+          if $(@).attr('data-src')?
+            img['src'] = $(@).attr 'data-src'
+          else if $(@).attr('src')?
+            img['src'] = $(@).attr 'src'
+        else if isBg
+          img['src'] = $(@).css('background-image').replace /(url\(|\)|")/g, ''
+
+        imgs.push img
 
     return imgs
 
-  load : (imgs) =>
+  divide : (imgs) =>
+    device = if _ua.pc then 'pc' else 'sp'
+
+    for val in imgs
+      val.src = val.src.replace 'device', device
+
+  load : (imgs, func) =>
     p = []
     d = new $.Deferred
     isComp = false
 
     for i, val of imgs
-      do =>
+      do (val) ->
         d2 = new $.Deferred
         img = new Image()
 
         img.onload = ->
           d2.resolve()
-          d2 = null
+          func.loaded val
 
-        img.onerror = =>
+        img.onerror = ->
           d2.reject()
-          d2 = null
 
-        img.src = val
+        img.src = val.src
         p.push d2.promise()
 
-    $.when.apply(null, p).done =>
+    $.when.apply(null, p).done ->
       unless isComp
         isComp = true
         d.resolve()
 
-    $.when.apply(null, p).fail =>
+    $.when.apply(null, p).fail ->
       unless isComp
         isComp = true
         d.resolve()
@@ -60,4 +78,11 @@ module.exports = class Preload
           isComp = true
           d.resolve()
 
-    return d.promise()
+    d.done ->
+      func.complete()
+
+    d.fail ->
+      func.complete()
+
+  set : (img) =>
+    img.$.attr 'src', img.src if img.$.attr('data-src')?
