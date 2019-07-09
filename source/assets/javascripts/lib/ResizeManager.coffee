@@ -2,7 +2,7 @@
 #
 # func = ->
 #   console.log resizeManager.width, resizeManager.height
-# 
+#
 # resizeManager.on func
 # resizeManager.off func
 
@@ -10,8 +10,8 @@ module.exports = class resizeManager
 
   constructor : ->
     @funcs = []
-    @width = 0
-    @height = 0
+    @width = $(window).width()
+    @height = $(window).height()
 
   init : =>
     $(window).on 'resize', =>
