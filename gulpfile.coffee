@@ -7,17 +7,13 @@ sass = require 'gulp-sass'
 webpack = require 'webpack'
 webpackStream = require 'webpack-stream'
 svgmin = require 'gulp-svgmin'
-sourcemaps = require 'gulp-sourcemaps'
 plumber = require 'gulp-plumber'
 autoprefixer = require 'gulp-autoprefixer'
 concat = require 'gulp-concat'
 minifyCss = require 'gulp-minify-css'
 iconfontCss = require 'gulp-iconfont-css'
 iconfont = require 'gulp-iconfont'
-watch = require 'gulp-watch'
-cached = require 'gulp-cached'
 browserSync = require 'browser-sync'
-runSequence = require 'run-sequence'
 rimraf = require 'rimraf'
 
 #------------------------------------------
@@ -53,27 +49,22 @@ gulp.task 'pug', ->
     .pipe pug
       basedir: path.source.root
     .pipe gulp.dest path.build.root
-    .pipe browserSync.stream()
 
 #css(sass)
 gulp.task 'sass', ->
-  gulp.src path.source.stylesheets + 'pc/*.sass'
-    .pipe sourcemaps.init()
+  gulp.src path.source.stylesheets + 'pc/*.sass', {sourcemaps:true}
     .pipe sass().on 'error', sass.logError
     .pipe autoprefixer()
     .pipe concat 'style.css'
     .pipe minifyCss keepSpecialComments: 0
-    .pipe sourcemaps.write './'
     .pipe gulp.dest path.build.stylesheets + 'pc/'
     .pipe browserSync.stream()
 
-  gulp.src path.source.stylesheets + 'sp/*.sass'
-    .pipe sourcemaps.init()
+  gulp.src path.source.stylesheets + 'sp/*.sass', {sourcemaps:true}
     .pipe sass().on 'error', sass.logError
     .pipe autoprefixer()
     .pipe concat 'style.css'
     .pipe minifyCss keepSpecialComments: 0
-    .pipe sourcemaps.write './'
     .pipe gulp.dest path.build.stylesheets + 'sp/'
     .pipe browserSync.stream()
 
@@ -86,26 +77,25 @@ gulp.task 'webpack', =>
     module:
       rules: [
         test: /\.coffee$/
-        use: ['coffee-loader']
+        use: [
+          loader:'cache-loader','coffee-loader'
+        ]
       ]
-    plugins: [
-      new webpack.optimize.UglifyJsPlugin
-        sourceMap: true
-    ]
+    optimization:
+      minimize: true
     devtool: 'eval'
     stats:
       errorDetails: true
+    mode: "development"
   ,webpack
     .on 'error', ->
       @emit 'end'
     .pipe gulp.dest path.build.javascripts
-    .pipe browserSync.stream()
 
 #image
 gulp.task 'image', ->
   gulp.src path.source.images + '**/*'
     .pipe gulp.dest path.build.images
-    .pipe browserSync.stream()
 
 #iconfont
 gulp.task 'iconfont', ->
@@ -136,26 +126,24 @@ gulp.task 'copy', ->
    .pipe gulp.dest path.build.root
 
 #watch
-gulp.task 'watch', ->
-  watch path.source.root + '**/*.pug', ->
-    gulp.start 'pug'
-  watch path.source.stylesheets + '**/*.sass', ->
-    gulp.start 'sass'
-  watch path.source.javascripts + '**/*', ->
-    gulp.start 'webpack'
-  watch path.source.images + '**/*', ->
-    gulp.start 'image'
-  watch path.source.icons + '**/*', ->
-    gulp.start 'iconfont'
+gulp.task 'watch', (done) ->
+  browserReload = () ->
+    browserSync.stream()
+    done()
+  gulp.watch(path.source.root + '**/*.pug').on 'change', gulp.series 'pug', browserReload
+  gulp.watch(path.source.stylesheets + '**/*.sass').on 'change', gulp.task 'sass'
+  gulp.watch(path.source.javascripts + '**/*').on 'change', gulp.series 'webpack', browserReload
+  gulp.watch(path.source.images + '**/*').on 'change', gulp.series 'image', browserReload
+  gulp.watch(path.source.icons + '**/*').on 'change', gulp.series 'iconfont', browserReload
 
 #browserSync
-gulp.task 'browserSync', ->
-  browserSync.init null,
-  server:
-    baseDir: path.build.root
-  notify: false
-  ghostMode: false
+gulp.task 'browserSync', (done) ->
+  browserSync.init
+    server:
+      baseDir: path.build.root
+    notify: false
+    ghostMode: false
+  done()
 
 #default
-gulp.task 'default', ->
-  runSequence 'clean', 'iconfont', ['pug', 'sass', 'webpack', 'image', 'copy'], 'browserSync', 'watch'
+gulp.task 'default', gulp.series('clean', 'iconfont', gulp.parallel('pug', 'sass', 'webpack', 'image', 'copy'), 'browserSync', 'watch')
