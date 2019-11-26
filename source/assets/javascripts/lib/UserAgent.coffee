@@ -2,6 +2,7 @@
 # _ua.device
 # _ua.pc
 # _ua.sp
+# _ua.ie
 
 module.exports = class UserAgent
 
@@ -60,6 +61,13 @@ module.exports = class UserAgent
   isSp : =>
     @vars.sp = do =>
       if @vars.device == 'iphone' || @vars.device == 'android'
+        return true
+      else
+        return false
+
+  isIe : =>
+    @vars.ie = do =>
+      if @vars.browser == 'edge' || @vars.browser == 'ie11' || @vars.browser == 'ie10' || @vars.browser == 'ie9'
         return true
       else
         return false
