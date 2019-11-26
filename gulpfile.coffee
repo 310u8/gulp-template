@@ -76,9 +76,15 @@ gulp.task 'webpack', =>
       filename: "app.js"
     module:
       rules: [
-        test: /\.coffee$/
+        test: /\.coffee?/,
         use: [
-          loader:'cache-loader','coffee-loader'
+          'cache-loader',
+          {
+            loader: 'babel-loader',
+            options:
+              presets: ['@babel/preset-env']
+          },
+          'coffee-loader'
         ]
       ]
     optimization:
@@ -127,14 +133,14 @@ gulp.task 'copy', ->
 
 #watch
 gulp.task 'watch', (done) ->
-  browserReload = () ->
-    browserSync.stream()
+  reload = () ->
+    browserSync.reload()
     done()
-  gulp.watch(path.source.root + '**/*.pug').on 'change', gulp.series 'pug', browserReload
+  gulp.watch(path.source.root + '**/*.pug').on 'change', gulp.series 'pug', reload
   gulp.watch(path.source.stylesheets + '**/*.sass').on 'change', gulp.task 'sass'
-  gulp.watch(path.source.javascripts + '**/*').on 'change', gulp.series 'webpack', browserReload
-  gulp.watch(path.source.images + '**/*').on 'change', gulp.series 'image', browserReload
-  gulp.watch(path.source.icons + '**/*').on 'change', gulp.series 'iconfont', browserReload
+  gulp.watch(path.source.javascripts + '**/*').on 'change', gulp.series 'webpack', reload
+  gulp.watch(path.source.images + '**/*').on 'change', gulp.series 'image', reload
+  gulp.watch(path.source.icons + '**/*').on 'change', gulp.series 'iconfont', reload
 
 #browserSync
 gulp.task 'browserSync', (done) ->
