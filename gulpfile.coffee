@@ -136,11 +136,11 @@ gulp.task 'watch', (done) ->
   reload = () ->
     browserSync.reload()
     done()
-  gulp.watch(path.source.root + '**/*.pug').on 'change', gulp.series 'pug', reload
-  gulp.watch(path.source.stylesheets + '**/*.sass').on 'change', gulp.task 'sass'
-  gulp.watch(path.source.javascripts + '**/*').on 'change', gulp.series 'webpack', reload
-  gulp.watch(path.source.images + '**/*').on 'change', gulp.series 'image', reload
-  gulp.watch(path.source.icons + '**/*').on 'change', gulp.series 'iconfont', reload
+  gulp.watch(path.source.root + '**/*.pug').on 'all', gulp.series 'pug', reload
+  gulp.watch(path.source.stylesheets + '**/*.sass').on 'all', gulp.task 'sass'
+  gulp.watch(path.source.javascripts + '**/*').on 'all', gulp.series 'webpack', reload
+  gulp.watch(path.source.images + '**/*').on 'all', gulp.series 'image', reload
+  gulp.watch(path.source.icons + '**/*').on 'all', gulp.series 'iconfont', reload
 
 #browserSync
 gulp.task 'browserSync', (done) ->
